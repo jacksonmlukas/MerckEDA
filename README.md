@@ -1,5 +1,5 @@
 # MerckEDA
-Discovery Data Science - UC Berkeley
+Data Science Discovery - UC Berkeley
 
 Merck: Benchmark dataset generation for discovery biologics
 
