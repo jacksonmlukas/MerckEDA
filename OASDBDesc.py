@@ -72,7 +72,7 @@ class OASDBDesc:
         #label_encode
         le = LabelEncoder()
         le.fit(df[column])
-        integer_encoded_letters_arry = le.transform(small_df[column])
+        integer_encoded_letters_arry = le.transform(df[column])
 
         #append
         integer_encoded_letters_series = pd.Series(integer_encoded_letters_arry)
