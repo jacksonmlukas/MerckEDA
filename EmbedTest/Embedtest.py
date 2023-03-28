@@ -1,6 +1,12 @@
 import pandas as pd
 inport numpy as np
 
+from Bio import Seql0
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
 import os
 
 #rojan's class definition
@@ -62,3 +68,62 @@ class OASDBDesc:
                   df_vh_len = pd.concat([df_vh_len, df_temp], ignore_index = True)
 
         return df_v_heavy, df_vh_len
+   
+    def pc_embedding(self, df_sub_sample, seq_col, annotate_col):
+        df_selected_sample = df_sub_sample[[annotate col, seq_col]]
+        df pc_encode = pd.DataFrame([ProteinAnalysis(i).count_amino_acids() for i in df_selected_sample[seq_col]])
+        return df_pc_encode.copy()
+
+    def extended_pc_embedding(self, df_pc_encode)
+        df_rsd_mdata = pd. read_csv("rsd_mdata.csv")
+        df rsd_mdata.set_index("Aminoacids", inplace=True)
+
+        df_temp = pd.DataFrame()
+          # df_temp1 = df_pc_encode[df_rsd_ndata. index]#df_rsd_ndata["PC"].T
+          # df temp["PC"] = df_templ.mean(axis=1)
+
+          # df_temp1 = df_pcllencode[df_rsd_ndata. index]*df_rsd_ndata["NC"].T
+        # df temp["NC"]= df_templ.mean(axis=1)
+
+                            
+
+          df_temp1 = df_pc_encode[df_rsd_mdata.index]*df_rsd_mdata["HS"].T
+          df temp["HS"] = df_temp1.mean(axis=1)
+
+          df_temp1 = df_pc_encode[df_rsd_mdata.index]*df_rsd_mdata["pI"].T
+          df temp["pI"] = df_temp1.mean(axis=1)
+
+          # df_temp1 = df_pc_encode[df_rsd_ndata. index]*df_rsd_ndata[ "num_atons"].T
+          # df temp["num_atoms"] = df_Temp1.mean(axis=1)
+
+          df_temp1 = df_pc_encode[df_rsd_mdata. index]*df_rsd_mdata["hbondDA"].T
+          df_temp["hbondDA™] = df_temp1.mean(axis=1)
+          return df_temp.join(df_pc_encode, how="inner").copy()
+
+   def pca_analysis(self, df_pc_encode, df_meta, annotate_col)
+          #Standard scale
+          oscale = StandardScaler()
+          # Use fit and transform method
+          oscale.fit(df_pc_encode.values)
+          encode_scale_data= oscale.transform(df_pc_encode.values)
+                  
+          #PCA analysis
+          opca = PCA(n_components=2)
+          opca.fit(encode_scale_data)
+          x = opca.transform(encode_scale_data)
+          df_pcs = pd.DataFrame(x, columns = ["PC1", "PC2"]
+
+          "Merge PCs with annotation data""”
+
+          df_pcs_meta = df_pcs.join(df_meta, how="inner")
+          df pcs_meta[ "newcol"] = df_pcs_meta[annotate_col].apply(lanbda row: row.split("-")[0] \
+                                                                                      .split('S')[0]\
+                                                                                      .split('D')[0]\
+                                                                                      .split('*')[0])
+                 
+
+          df_pcs_meta = df_pcs_meta.sort_values("newcol”)
+          return df_pcs_meta
+                              
+                  
+                
