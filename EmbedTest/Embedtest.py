@@ -130,6 +130,44 @@ class OASDBDesc:
         df_pcs_meta = df_pcs_meta.sort_values("newcol")
         return df_pcs_meta
     
+     #ablang
+    def ablang_encode_seq(self, df, column):
+        #function to encode sequences
+        
+        #5 main types of protein encoding methods: binary encoding, 
+        #physiochemical properties encoding, evolution-based encoding, structure-based encoding, 
+        #and machine-learning encoding.
+        
+        #ablang
+        
+        #heavy sequence encoding
+        heavy_ablang = ablang.pretrained("heavy")
+        heavy_ablang.freeze()
+        
+        seqs_heavy = df.loc[1:30, 'sequence_alignment_aa_heavy']
+
+        seqcodings_heavy = heavy_ablang(seqs_heavy, mode='seqcoding')
+        print("-"*100)
+        print("The output shape of the heavy seq-codings:", seqcodings_heavy.shape)
+        print("-"*100)
+
+        print(seqcodings_heavy)
+        
+        #light sequence encoding
+        light_ablang = ablang.pretrained("light")
+        light_ablang.freeze()
+        
+        seqs_light = df.loc[1:30, 'sequence_alignment_aa_light']
+
+        seqcodings_light = light_ablang(seqs_light, mode='seqcoding')
+        print("-"*100)
+        print("The output shape of the light seq-codings:", seqcodings_light.shape)
+        print("-"*100)
+
+        print(seqcodings_light)
+        
+    
+    
     #one hot encode
     def one_hot_encode_seq(self, df, column):
     #Output a df with a specific columns that want to get dummies in
