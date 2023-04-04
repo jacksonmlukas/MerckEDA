@@ -126,22 +126,24 @@ class OASDBDesc:
         df_pcs_meta = df_pcs_meta.sort_values("newcol")
         return df_pcs_meta
     
+    #one hot encode
     def one_hot_encode_seq(self, df, column):
     #Output a df with a specific columns that want to get dummies in
     
-    #label_encode
-    le = LabelEncoder()
-    le.fit(df[column])
-    integer_encoded_letters_arry = le.transform(df[column])
-    
-    #append
-    integer_encoded_letters_series = pd.Series(integer_encoded_letters_arry)
-    df['integer_encoded_letters'] = integer_encoded_letters_series
-    
-    #one hot encode
-    df_dummies = pd.get_dummies(df, prefix = ['integer_encoded_letters'], columns = ['integer_encoded_letters'], drop_first = True)
-    return df_dummies
+        #label_encode
+        le = LabelEncoder()
+        le.fit(df[column])
+        integer_encoded_letters_arry = le.transform(df[column])
 
+        #append
+        integer_encoded_letters_series = pd.Series(integer_encoded_letters_arry)
+        df['integer_encoded_letters'] = integer_encoded_letters_series
+
+        #one hot encode
+        df_dummies = pd.get_dummies(df, prefix = ['integer_encoded_letters'], columns = ['integer_encoded_letters'], drop_first = True)
+    return df_dummies
+    
+    #physchemvh_gen
     alph = np.array(sorted('ACDEFGHIKLMNPQRSTVWY'))
     residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
     def physchemvh_gen(self, df, column):
@@ -167,6 +169,40 @@ class OASDBDesc:
         res_counts.reset_index(drop = True, inplace = True)
         physchemvh = pd.concat([res_counts, hydrophobicity['ave']], axis = 1, ignore_index = False)
         return physchemvh
+    
+    #find the best cluster
+    def best_num_cluster(X, elbow = True, silhouette = True):
+    #Elbow Method
+    if elbow == True:
+        Sum_of_squared_distances = []
+        K = range(1,len(X) + 1)
+        for num_clusters in K :
+            kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
+            kmeans.fit(X)
+            Sum_of_squared_distances.append(kmeans.inertia_)
+        plt.plot(K,Sum_of_squared_distances,'bx-')
+        plt.xlabel('Values of K') 
+        plt.ylabel('Sum of squared distances/Inertia') 
+        plt.title('Elbow Method For Optimal k')
+        plt.show()
+        
+    if silhouette == True:
+        #Silhouette
+        range_n_clusters = range(2, len(X))
+        silhouette_avg = []
+        for num_clusters in range_n_clusters:
+             # initialise kmeans
+            kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
+            kmeans.fit(X)
+            cluster_labels = kmeans.labels_
+
+            # silhouette score
+            silhouette_avg.append(silhouette_score(X, cluster_labels))
+        plt.plot(range_n_clusters,silhouette_avg,'bx-')
+        plt.xlabel('Values of K') 
+        plt.ylabel('Silhouette score') 
+        plt.title('Silhouette analysis For Optimal k')
+        plt.show()
                               
                   
                 
