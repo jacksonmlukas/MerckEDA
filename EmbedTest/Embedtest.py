@@ -125,6 +125,48 @@ class OASDBDesc:
 
         df_pcs_meta = df_pcs_meta.sort_values("newcol")
         return df_pcs_meta
+    
+    def one_hot_encode_seq(self, df, column):
+    #Output a df with a specific columns that want to get dummies in
+    
+    #label_encode
+    le = LabelEncoder()
+    le.fit(df[column])
+    integer_encoded_letters_arry = le.transform(df[column])
+    
+    #append
+    integer_encoded_letters_series = pd.Series(integer_encoded_letters_arry)
+    df['integer_encoded_letters'] = integer_encoded_letters_series
+    
+    #one hot encode
+    df_dummies = pd.get_dummies(df, prefix = ['integer_encoded_letters'], columns = ['integer_encoded_letters'], drop_first = True)
+    return df_dummies
+
+    alph = np.array(sorted('ACDEFGHIKLMNPQRSTVWY'))
+    residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
+    def physchemvh_gen(self, df, column):
+        res_counts = pd.DataFrame(index = alph)
+        df = df.set_index(column)
+        for i in df.index:
+            characters = pd.Series(list(i))
+            res_counts = pd.concat([res_counts, characters.value_counts()], axis = 1, ignore_index = False)
+        res_counts.fillna(0, inplace = True)
+        res_counts = res_counts.T
+        hydrophobicity = []    
+        for column in res_counts:
+            hydros = []
+            for index, row in res_counts.iterrows():
+                hydros.append(row[column]*residue_info.loc[column, 'Hydropathy Score'])
+            hydrophobicity.append(hydros)
+        hydrophobicity = pd.DataFrame(hydrophobicity).T
+        hydrophobicity['ave'] = hydrophobicity.sum(axis = 1)/115
+        res_counts['Hydro'] = res_counts['A'] +  res_counts['I'] +  res_counts['L']+  res_counts['F']+  res_counts['V']
+        res_counts['Amph'] = res_counts['W'] +  res_counts['Y']+  res_counts['M']
+        res_counts['Polar'] = res_counts['Q'] +  res_counts['N'] + res_counts['S'] +  res_counts['T'] +  res_counts['C']+  res_counts['M']
+        res_counts['Charged'] =  res_counts['R'] +  res_counts['K'] + res_counts['D'] +  res_counts['E'] +  res_counts['H']
+        res_counts.reset_index(drop = True, inplace = True)
+        physchemvh = pd.concat([res_counts, hydrophobicity['ave']], axis = 1, ignore_index = False)
+        return physchemvh
                               
                   
                 
