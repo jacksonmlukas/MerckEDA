@@ -161,7 +161,7 @@ class OASDBDesc:
                 hydros.append(row[column]*residue_info.loc[column, 'Hydropathy Score'])
             hydrophobicity.append(hydros)
         hydrophobicity = pd.DataFrame(hydrophobicity).T
-        hydrophobicity['ave'] = hydrophobicity.sum(axis = 1)/115
+        hydrophobicity['ave'] = hydrophobicity.mean()
         res_counts['Hydro'] = res_counts['A'] +  res_counts['I'] +  res_counts['L']+  res_counts['F']+  res_counts['V']
         res_counts['Amph'] = res_counts['W'] +  res_counts['Y']+  res_counts['M']
         res_counts['Polar'] = res_counts['Q'] +  res_counts['N'] + res_counts['S'] +  res_counts['T'] +  res_counts['C']+  res_counts['M']
