@@ -147,11 +147,6 @@ class OASDBDesc:
         seqs_heavy = df.loc[1:30, 'sequence_alignment_aa_heavy']
 
         seqcodings_heavy = heavy_ablang(seqs_heavy, mode='seqcoding')
-        print("-"*100)
-        print("The output shape of the heavy seq-codings:", seqcodings_heavy.shape)
-        print("-"*100)
-
-        print(seqcodings_heavy)
         
         #light sequence encoding
         light_ablang = ablang.pretrained("light")
@@ -160,12 +155,9 @@ class OASDBDesc:
         seqs_light = df.loc[1:30, 'sequence_alignment_aa_light']
 
         seqcodings_light = light_ablang(seqs_light, mode='seqcoding')
-        print("-"*100)
-        print("The output shape of the light seq-codings:", seqcodings_light.shape)
-        print("-"*100)
-
-        print(seqcodings_light)
         
+        return seqcodings_light, seqcodings_heavy
+
     
     
     #one hot encode
@@ -248,16 +240,21 @@ class OASDBDesc:
             
     def umap(self, data):
         reducer = umap.UMAP()
-        scaled_data = StandardScaler().fit_transform(data.iloc[:, 8:].values)
+        scaled_data = StandardScaler().fit_transform(data.values)
         embedding = reducer.fit_transform(scaled_data)
-        plt.scatter(embedding[:, 0], embedding[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
-        plt.title('UMAP projection of the dataset', fontsize=24);
+        
+        return embedding
+        #plt.scatter(embedding[:, 0], embedding[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
+        #plt.title('UMAP projection of the dataset', fontsize=24);
         
     def t_sne(self, data):
         X = data.iloc[:, 8:]
         X_embedded = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(X)
-        plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
-        plt.title('t-SNE projection of the dataset', fontsize=24);
+        
+        #plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
+        #plt.title('t-SNE projection of the dataset', fontsize=24);
+        
+        return X_embedded
         
         
     
