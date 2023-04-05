@@ -178,9 +178,9 @@ class OASDBDesc:
         return df_dummies
     
     #physchemvh_gen
-    alph = np.array(sorted('ACDEFGHIKLMNPQRSTVWY'))
-    residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
     def physchemvh_gen(self, df, column):
+         alph = np.array(sorted('ACDEFGHIKLMNPQRSTVWY'))
+        residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
         res_counts = pd.DataFrame(index = alph)
         df = df.set_index(column)
         for i in df.index:
@@ -248,7 +248,7 @@ class OASDBDesc:
         #plt.title('UMAP projection of the dataset', fontsize=24);
         
     def t_sne(self, data):
-        X = data.iloc[:, 8:]
+        X = data.values
         X_embedded = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(X)
         
         #plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
