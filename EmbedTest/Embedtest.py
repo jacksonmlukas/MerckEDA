@@ -235,7 +235,7 @@ class OASDBDesc:
         return range_n_clusters, silhouette_avg
              
     #final kmean 
-    def final_kmean_cluster(data, best_cluster, random_sample = 48):
+    def final_kmean_cluster(self, data, best_cluster, random_sample = 48):
     # find the final k_mean cluster after knowing the best cluster for the given data
     #be sure to use scaled data
         kmeans = KMeans(n_clusters = best_cluster, random_sample).fit(data)
