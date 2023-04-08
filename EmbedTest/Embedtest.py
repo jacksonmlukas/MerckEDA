@@ -19,7 +19,7 @@ class OASDBDesc:
 
     def __init__(self):
         pass
-
+        self.residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
     def read_data(self, rawdata_dir):
         "Gather gz files from the directory and extract these files"
 
@@ -178,8 +178,8 @@ class OASDBDesc:
     
     #physchemvh_gen
     def physchemvh_gen(self, df, column):
-         alph = np.array(sorted('ACDEFGHIKLMNPQRSTVWY'))
-        residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
+        alph = np.array(sorted('ACDEFGHIKLMNPQRSTVWY'))
+        #residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
         res_counts = pd.DataFrame(index = alph)
         df = df.set_index(column)
         for i in df.index:
@@ -238,7 +238,7 @@ class OASDBDesc:
     def final_kmean_cluster(self, data, best_cluster, random_sample = 48):
     # find the final k_mean cluster after knowing the best cluster for the given data
     #be sure to use scaled data
-        kmeans = KMeans(n_clusters = best_cluster, random_sample).fit(data)
+        kmeans = KMeans(n_clusters = best_cluster, random_sample = 48).fit(data)
         cluster_labels = kmeans.labels_
         data['cluster'] = cluster_labels
         return data
