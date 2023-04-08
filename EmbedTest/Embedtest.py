@@ -158,8 +158,7 @@ class OASDBDesc:
         
         return seqcodings_light, seqcodings_heavy
 
-    
-    
+   
     #one hot encode
     def one_hot_encode_seq(self, df, column):
     #Output a df with a specific columns that want to get dummies in
@@ -195,7 +194,8 @@ class OASDBDesc:
                 hydros.append(row[column]*residue_info.loc[column, 'Hydropathy Score'])
             hydrophobicity.append(hydros)
         hydrophobicity = pd.DataFrame(hydrophobicity).T
-        hydrophobicity['ave'] = hydrophobicity.mean()
+        #hydrophobicity['ave'] = hydrophobicity.mean()
+        hydrophobicity['ave'] = hydrophobicity.sum(axis = 1)/115
         res_counts['Hydro'] = res_counts['A'] +  res_counts['I'] +  res_counts['L']+  res_counts['F']+  res_counts['V']
         res_counts['Amph'] = res_counts['W'] +  res_counts['Y']+  res_counts['M']
         res_counts['Polar'] = res_counts['Q'] +  res_counts['N'] + res_counts['S'] +  res_counts['T'] +  res_counts['C']+  res_counts['M']
@@ -204,40 +204,46 @@ class OASDBDesc:
         physchemvh = pd.concat([res_counts, hydrophobicity['ave']], axis = 1, ignore_index = False)
         return physchemvh
     
-    #find the best cluster
-    def best_num_cluster(self, X, elbow = True, silhouette = True):
+    #find the best clustering
+    def best_num_cluster(X, num_of_cluster, elbow = True, silhouette = True):
+        #be sure to use the scaled data for X
     #Elbow Method
         if elbow == True:
             Sum_of_squared_distances = []
-            K = range(1,len(X) + 1)
+            #100 or less
+            K = range(1, num_of_cluster)
             for num_clusters in K :
                 kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
                 kmeans.fit(X)
                 Sum_of_squared_distances.append(kmeans.inertia_)
-            plt.plot(K,Sum_of_squared_distances,'bx-')
-            plt.xlabel('Values of K') 
-            plt.ylabel('Sum of squared distances/Inertia') 
-            plt.title('Elbow Method For Optimal k')
-            plt.show()
+        return K, Sum_of_squared_distances
         
         if silhouette == True:
-            #Silhouette
-            range_n_clusters = range(2, len(X))
+        #Silhouette
+        
+        #100 or less
+            range_n_clusters = range(2, num_of_cluster)
             silhouette_avg = []
             for num_clusters in range_n_clusters:
-             # initialise kmeans
+                 # initialise kmeans
                 kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
                 kmeans.fit(X)
                 cluster_labels = kmeans.labels_
 
-            # silhouette score
+                # silhouette score
                 silhouette_avg.append(silhouette_score(X, cluster_labels))
-            plt.plot(range_n_clusters,silhouette_avg,'bx-')
-            plt.xlabel('Values of K') 
-            plt.ylabel('Silhouette score') 
-            plt.title('Silhouette analysis For Optimal k')
-            plt.show()
-            
+        return range_n_clusters, silhouette_avg
+             
+    #final kmean 
+    def final_kmean_cluster(data, best_cluster, random_sample = 48):
+    # find the final k_mean cluster after knowing the best cluster for the given data
+    #be sure to use scaled data
+        kmeans = KMeans(n_clusters = best_cluster, random_sample).fit(data)
+        cluster_labels = kmeans.labels_
+        data['cluster'] = cluster_labels
+        return data
+    
+    
     def umap(self, data):
         reducer = umap.UMAP()
         scaled_data = StandardScaler().fit_transform(data.values)
@@ -258,6 +264,5 @@ class OASDBDesc:
         
         
     
-                              
-                  
+                             
                 
