@@ -7,7 +7,7 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-import umap.umap_ as umap
+#import umap.umap_ as umap
 
 from sklearn.manifold import TSNE
 
@@ -56,7 +56,7 @@ class OASDBDesc:
 
               #"v_call_heavy"
             df_temp = df_sub_seqs[["v_call_heavy"]]
-            df_temp["iter"]=i
+            df_temp["iter"]= i
             if df_v_heavy.empty:
                 df_v_heavy = df_temp
             else:
@@ -65,12 +65,12 @@ class OASDBDesc:
                                    
 
               #“heavy chain length"
-        df_temp = df_sub_seqs[["VH_Len"]]
-        df_temp["iter"] = i
-        if df_vh_len.empty:
-            df_vh_len= df_temp
-        else:
-            df_vh_len = pd.concat([df_vh_len, df_temp], ignore_index = True)
+            df_temp = df_sub_seqs[["VH_Len"]]
+            df_temp["iter"] = i
+            if df_vh_len.empty:
+                df_vh_len= df_temp
+            else:
+                df_vh_len = pd.concat([df_vh_len, df_temp], ignore_index = True)
 
         return df_v_heavy, df_vh_len
    
@@ -260,9 +260,5 @@ class OASDBDesc:
         #plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
         #plt.title('t-SNE projection of the dataset', fontsize=24);
         
-        return X_embedded
-        
-        
-    
-                             
+        return X_embedded                        
                 
