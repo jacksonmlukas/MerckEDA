@@ -20,7 +20,7 @@ class OASDBDesc:
     def __init__(self):
         pass
         self.residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
-        self.Sum_of_squared_distances = []
+    
         
     def read_data(self, rawdata_dir):
         "Gather gz files from the directory and extract these files"
@@ -206,15 +206,14 @@ class OASDBDesc:
         physchemvh = pd.concat([res_counts, hydrophobicity['ave']], axis = 1, ignore_index = False)
         return physchemvh
     
-     #find the best clustering
+    #find the best clustering
     def best_num_cluster_elbow(self, X, num_of_cluster): #be sure to use scaled_dataset
         Sum_of_squared_distances = []
-            #100 or less
         K = range(1, num_of_cluster)
         for num_clusters in K :
             kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
             kmeans.fit(X)
-            self.Sum_of_squared_distances.append(kmeans.inertia_)
+            Sum_of_squared_distances.append(kmeans.inertia_)
         clusters_df = pd.DataFrame(list(zip(K, Sum_of_squared_distances)), columns = ['K', 'Sum_of_squared_distances'])
     return clusters_df
         
