@@ -210,19 +210,16 @@ class OASDBDesc:
         return physchemvh
     
     #find the best clustering
-    def best_num_cluster_elbow(self, X, num_of_cluster, elbow = True):
-#   #be sure to use the scaled data for X
-#   #Elbow Method
-    #Sum_of_squared_distances = []
-        if elbow == True:
-            #100 or less
-            K = range(1, num_of_cluster)
-            for num_clusters in K :
-                kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
-                kmeans.fit(X)
-                self.Sum_of_squared_distances.append(kmeans.inertia_)
-            clusters_df = pd.DataFrame(list(zip(K, Sum_of_squared_distances)), columns = ['K', 'Sum_of_squared_distances'])
-        return clusters_df
+    def best_num_cluster_elbow(self, X, num_of_cluster): #   #be sure to use the scaled data for X
+        Sum_of_squared_distances = []
+        #100 or less
+        K = range(1, num_of_cluster)
+        for num_clusters in K :
+            kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
+            kmeans.fit(X)
+            self.Sum_of_squared_distances.append(kmeans.inertia_)
+        clusters_df = pd.DataFrame(list(zip(K, Sum_of_squared_distances)), columns = ['K', 'Sum_of_squared_distances'])
+    return clusters_df
         
     def best_num_cluster_sil(self, X, num_of_cluster, silhouette = True):
         #Silhouette
