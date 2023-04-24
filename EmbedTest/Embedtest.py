@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import ablang
 
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
@@ -20,8 +21,6 @@ class OASDBDesc:
     def __init__(self):
         pass
         self.residue_info = pd.read_csv("residue_dict_copy.csv", header = 0, index_col = 0)
-    
-        
     def read_data(self, rawdata_dir):
         "Gather gz files from the directory and extract these files"
 
@@ -29,7 +28,7 @@ class OASDBDesc:
         t_cols = ['v_call_heavy', 'j_call_heavy', 'v_call_light', 'j_call_light', 'sequence_alignment_aa_light', 'sequence_alignment_aa_heavy','ANARCI_status_light', 'ANARCI_status_heavy']
         df_seqs = pd.DataFrame()
         for paired_file in paired_files:
-            print(paired_file)
+            #print(paired_file)
             df = pd.read_csv(paired_file, compression = "gzip", sep = ",", skiprows=1)
             df_seqs = pd.concat([df_seqs, df[t_cols]], ignore_index=True)
         return df_seqs.copy()
@@ -133,7 +132,7 @@ class OASDBDesc:
         return df_pcs_meta
     
      #ablang
-    def ablang_encode_seq(self, df, column):
+    def ablang_encode_seq(self, df):
         #function to encode sequences
         
         #5 main types of protein encoding methods: binary encoding, 
@@ -207,22 +206,24 @@ class OASDBDesc:
         return physchemvh
     
     #find the best clustering
-    def best_num_cluster_elbow(self, X, num_of_cluster): #be sure to use scaled_dataset
-        Sum_of_squared_distances = []
-        K = range(1, num_of_cluster)
-        for num_clusters in K :
-            kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
-            kmeans.fit(X)
-            Sum_of_squared_distances.append(kmeans.inertia_)
-        clusters_df = pd.DataFrame(list(zip(K, Sum_of_squared_distances)), columns = ['K', 'Sum_of_squared_distances'])
-    return clusters_df
+    def best_num_cluster(X, num_of_cluster, elbow = True, silhouette = True):
+        #be sure to use the scaled data for X
+    #Elbow Method
+        if elbow == True:
+            Sum_of_squared_distances = []
+            #100 or less
+            K = range(1, num_of_cluster)
+            for num_clusters in K :
+                kmeans = KMeans(n_clusters=num_clusters, random_state = 48)
+                kmeans.fit(X)
+                Sum_of_squared_distances.append(kmeans.inertia_)
+        return K, Sum_of_squared_distances
         
-    def best_num_cluster_sil(self, X, num_of_cluster, silhouette = True):
-        #Silhouette
-        range_n_clusters = range(2, num_of_cluster)
         if silhouette == True:
+        #Silhouette
+        
         #100 or less
-            #range_n_clusters = range(2, num_of_cluster)
+            range_n_clusters = range(2, num_of_cluster)
             silhouette_avg = []
             for num_clusters in range_n_clusters:
                  # initialise kmeans
@@ -260,5 +261,4 @@ class OASDBDesc:
         #plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
         #plt.title('t-SNE projection of the dataset', fontsize=24);
         
-        return X_embedded                        
-                
+        return X_embedded
