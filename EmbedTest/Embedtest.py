@@ -254,11 +254,20 @@ class OASDBDesc:
         #plt.scatter(embedding[:, 0], embedding[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
         #plt.title('UMAP projection of the dataset', fontsize=24);
         
-    def t_sne(self, data):
-        X = data.values
+    def tsne_analysis(self, df_pc_encode, df_meta, annotate_col):
+        X = df_pc_encode.values
         X_embedded = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(X)
         
         #plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c= np.arange(1500), s=5, cmap='Spectral')
         #plt.title('t-SNE projection of the dataset', fontsize=24);
+        df_pcs = pd.DataFrame(X_embedded, columns = ["PC1", "PC2"])
         
-        return X_embedded
+         #"Merge PCs with annotation data""”
+        df_pcs_meta = df_pcs.join(df_meta, how="inner")
+        df_pcs_meta["newcol"] = df_pcs_meta[annotate_col].apply(lambda row: row.split("-")[0] \
+                                                                                      .split('S')[0]\
+                                                                                      .split('D')[0]\
+                                                                                      .split('*')[0])
+        df_pcs_meta = df_pcs_meta.sort_values("newcol")
+        
+        return df_pcs_meta
